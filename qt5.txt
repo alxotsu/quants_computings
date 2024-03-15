@@ -1,0 +1,19 @@
+https://youtu.be/pMNrxE1xAfw     qt5
+
+https://doc.qt.io/qt-6/qtdesigner-manual.html      учебник по дизайн
+
+https://www.guru99.com/ru/pyqt-tutorial.html       учебник по qt5
+ 
+https://python-scripts.com/pyqt5?ysclid=lqfavy7q2q413205518#pyqt5-designer-location     для начинающих
+
+https://python-scripts.com/pyqt5?ysclid=lqhx9avi2p422157976
+
+
+https://python-scripts.com/pyqt5?ysclid=lqfbi7iy8o348173550
+
+python -m PyQt5.uic.pyuic -x [FILENAME].ui -o [FILENAME].py   [] не учитывать большие буквы PyQt5
+pyuic5 name.ui -o name.py
+
+
+https://youtu.be/HeFMMRwRRY0
+

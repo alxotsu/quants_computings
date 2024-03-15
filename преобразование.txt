@@ -1,0 +1,7 @@
+pyuic5 -x lesson3a.ui -o main.py
+
+https://youtu.be/zfLc45RQ9Zk
+
+
+pyuic5 -x mainwindow.ui -o mainwindow.py
+
