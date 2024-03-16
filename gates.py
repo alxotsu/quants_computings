@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import sympy as sp
-from bin_tools import dec_to_bin_list, bin_list_to_dec, bin_register
+from bin_tools import dec_to_bin_list, bin_list_to_dec, bin_register, int_to_bits
 
 sigma_x_matrix = np.array([[0, 1], [1, 0]])
 sigma_y_matrix = np.array([[0, 0 - 1j], [0 + 1j, 0]])
@@ -104,37 +104,7 @@ def apply_cnot(input_array, control_qubit_ind, target_qubit_ind):
 
 ###-------------------------------CONTROLED HADAMAR
 def apply_cnot1(input_array, control_qubit_ind, target_qubit_ind):
-    # print("#################===apply_cnot1=====CHadamar=======#############")
-    #### эта процедура с единичными control_qubit_ind даст правильный результат
-    #### если control_qubit_ind=0 , то верно для единственного базисного состояния
-    #### для группы control_qubit_ind=0 не должна работать
-    #### хотя без нормировкм обрабатывает весь регистр как будто у всех 
-    #### базисных состояний    control_qubit_ind =1 
-    la = input_array.size
-    nq = int(np.log2(la))  # number of qubits
-    t = AllBazisStates(nq)
-
-    length = int(np.log2(input_array.size))
-    result = np.zeros(input_array.size, input_array.dtype)
-    for array_ind in range(input_array.size):
-        bin_array_ind = dec_to_bin_list(array_ind, length)  # перевод 10 - 2 номер цикла, число кубит
-        # print('bin_array_ind десятичный = ',bin_array_ind  )
-        # print('bin_array_ind[control_qubit_ind] ', bin_array_ind[control_qubit_ind]  )
-        # print('bin_array_ind[target_qubit_ind] ', bin_array_ind[target_qubit_ind]  )
-        # print(' ========= control_qubit_ind ',control_qubit_ind, 'type (control_qubit_ind) ', type (control_qubit_ind)  )
-        # print(' ========= target_qubit_ind ',target_qubit_ind  )
-        ##################print('target_qubit ??  ',target_qubit  )   # нет такой переменной
-
-        if (bin_array_ind[control_qubit_ind] == 1):  # and (control_qubit_ind !=0):
-            ###print('из apply_cnot1 не знаю что', apply_hadamard(input_array, target_qubit_ind)    )
-            # result = apply_matrix(input_array, hadamard_matrix, bin_array_ind[target_qubit_ind] )
-            result = apply_matrix(input_array, hadamard_matrix, target_qubit_ind)  # было
-            # print(' result 1',result)
-
-            for row in range(0, len(result)):
-                result[row] = "1/sqrt(2)*(" + str(result[row]).replace('I', 'j') + ")"
-                # print(' result 2',result)
-
+    result = apply_controlled_matrix(input_array, hadamard_matrix / math.sqrt(2), target_qubit_ind, [control_qubit_ind])
     return result
 
 
@@ -360,4 +330,26 @@ def apply_matrix1(input_array, matrix, target_qubit_ind):  # target_qubit_ind
         bin_array_ind[qubit_ind] = not bin_array_ind[qubit_ind]
         result[array_ind] += "+((" + str(output[1]) + ")*(" + input_array[bin_list_to_dec(bin_array_ind)] + "))"
         result[array_ind] = sp.sympify(result[array_ind].replace('I', 'j'))
+    return result
+
+
+def apply_controlled_matrix(input_array, matrix, target_qubit, control_qubits):
+    full_matrix = np.diag(np.full(input_array.size, 1, dtype="float32"))
+    submatrix_size = 2 ** target_qubit
+    bits_length = int(np.log2(input_array.size))
+    for i in range(input_array.size):
+        bits = int_to_bits(i, bits_length)
+        if all([bits[qbit] for qbit in control_qubits]) and not bits[target_qubit]:
+            full_matrix[i, i] = matrix[0, 0]
+            full_matrix[i, i + submatrix_size] = matrix[0, 1]
+            full_matrix[i + submatrix_size, i] = matrix[1, 0]
+            full_matrix[i + submatrix_size, i + submatrix_size] = matrix[1, 1]
+
+    result = np.zeros(input_array.size, input_array.dtype)
+    for res_elem_id in range(input_array.size):
+        result_elem_str = ""
+        for input_elem_id in range(input_array.size):
+            result_elem_str += f"(({full_matrix[res_elem_id, input_elem_id]}) * ({input_array[input_elem_id]})) + "
+        result_elem_str = result_elem_str[:-3]
+        result[res_elem_id] = sp.sympify(result_elem_str.replace('I', 'j'))
     return result

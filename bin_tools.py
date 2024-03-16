@@ -10,6 +10,17 @@ def dec_to_bin_list(value, length):
     return result
 
 
+def int_to_bits(value, length):
+    # not reversed list unlike another func
+    result = list()
+    while value > 0:
+        result.append(value % 2)
+        value //= 2
+    while len(result) < length:
+        result.append(0)
+    return result
+
+
 def bin_list_to_dec(value):
     result = 0
     pow = 1
