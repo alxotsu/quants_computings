@@ -104,7 +104,11 @@ def apply_cnot(input_array, control_qubit_ind, target_qubit_ind):
 
 ###-------------------------------CONTROLED HADAMAR
 def apply_cnot1(input_array, control_qubit_ind, target_qubit_ind):
-    result = apply_controlled_matrix(input_array, hadamard_matrix / math.sqrt(2), target_qubit_ind, [control_qubit_ind])
+    matrix = np.array(hadamard_matrix, dtype="<U20")
+    for i in range(hadamard_matrix.shape[0]):
+        for j in range(hadamard_matrix.shape[1]):
+            matrix[i, j] = f"({hadamard_matrix[i, j]})/sqrt(2)"
+    result = apply_controlled_matrix(input_array, matrix, target_qubit_ind, [control_qubit_ind])
     return result
 
 
@@ -334,7 +338,7 @@ def apply_matrix1(input_array, matrix, target_qubit_ind):  # target_qubit_ind
 
 
 def apply_controlled_matrix(input_array, matrix, target_qubit, control_qubits):
-    full_matrix = np.diag(np.full(input_array.size, 1, dtype="float32"))
+    full_matrix = np.diag(np.full(input_array.size, 1)).astype("<U64", copy=False)
     submatrix_size = 2 ** target_qubit
     bits_length = int(np.log2(input_array.size))
     for i in range(input_array.size):
