@@ -13,6 +13,8 @@ PHASE_NAME1 = 'PHM'
 SWAP_NAME = 'SW'
 SWAP1_NAME = 'ER'
 TRANSITION_NAME = '_'
+T_GATE_NAME = 'T'
+S_GATE_NAME = 'S'
 
 
 def add_apply_sigma_x(scheme_string, qubit_ind):
@@ -25,6 +27,20 @@ def add_apply_sigma_y(scheme_string, qubit_ind):
 
 def add_apply_sigma_z(scheme_string, qubit_ind):
     return scheme_string + TRANSITION_NAME + SIGMA_Z_NAME + '(' + str(qubit_ind + 1) + ')'
+
+
+def add_apply_t_gate(scheme_string, qubit_ind, conjugation):
+    if conjugation:
+        return scheme_string + TRANSITION_NAME + T_GATE_NAME + '(' + \
+               str(qubit_ind + 1) + ',' + '†' + ')'
+    return scheme_string + TRANSITION_NAME + T_GATE_NAME + '(' + str(qubit_ind + 1) + ')'
+
+
+def add_apply_s_gate(scheme_string, qubit_ind, conjugation):
+    if conjugation:
+        return scheme_string + TRANSITION_NAME + S_GATE_NAME + '(' + \
+               str(qubit_ind + 1) + ',' + '†' + ')'
+    return scheme_string + TRANSITION_NAME + S_GATE_NAME + '(' + str(qubit_ind + 1) + ')'
 
 
 def add_apply_hadamard(scheme_string, qubit_ind):
@@ -65,7 +81,7 @@ def add_apply_swap(scheme_string, first_line_ind, second_line_ind):
 
 def add_apply_swap1(scheme_string, first_line_ind, second_line_ind):
     #print ('первый индекс из scheme', first_line_ind )
-    #print ('второй индекс из scheme', second_line_ind ) 
+    #print ('второй индекс из scheme', second_line_ind )
     return scheme_string + TRANSITION_NAME + SWAP1_NAME + '(' + str(first_line_ind + 1) + ',' + \
            str(second_line_ind + 1) + ')'
 
@@ -109,6 +125,18 @@ def apply_scheme(scheme_string, input_array):
             if len(args_list) != 1:
                 return result_array, 'Wrong number of args: ' + gate_string
             result_array = apply_sigma_z(result_array, int(args_list[0]) - 1)
+
+        elif is_gate(T_GATE_NAME):
+            args_list = gate_args(T_GATE_NAME)
+            if len(args_list) != 1 or len(args_list) != 2:
+                return result_array, 'Wrong number of args: ' + gate_string
+            result_array = apply_t_gate(result_array, int(args_list[0]) - 1, args_list[1])
+
+        elif is_gate(S_GATE_NAME):
+            args_list = gate_args(S_GATE_NAME)
+            if len(args_list) != 1 or len(args_list) != 2:
+                return result_array, 'Wrong number of args: ' + gate_string
+            result_array = apply_s_gate(result_array, int(args_list[0]) - 1, args_list[1])
 
         elif is_gate(HADAMARD_NAME):
             args_list = gate_args(HADAMARD_NAME)

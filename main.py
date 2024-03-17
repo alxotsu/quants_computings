@@ -6,7 +6,6 @@ from mainwindow import *
 from PyQt5.QtWidgets import QHeaderView, QTableWidgetItem, QMessageBox, QFileDialog
 from scheme_builder import *
 
-
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
@@ -113,16 +112,16 @@ if __name__ == '__main__':
                 item_real.setTextAlignment(132)
                 table_widget.setItem(row, 0, item_real)
 
-                item_imag = QTableWidgetItem('0' )
+                item_imag = QTableWidgetItem('0')
                 item_imag.setTextAlignment(132)
                 table_widget.setItem(row, 1, item_imag)
-                
+
                 #print ('col = ', col, ' row = ', row)
                 #item = QTableWidgetItem(str(1))
                 #print ('item = ', item)
                 #item.setTextAlignment(132)
                 #table_widget.setItem(row, col, item)
-                
+
     def set_one_input_push_button_clicked():
         set_one_table_widget(ui.inputTableWidget)
     ui.setZeroInputPushButton_2.clicked.connect(set_one_input_push_button_clicked)
@@ -135,7 +134,7 @@ if __name__ == '__main__':
                 item = QTableWidgetItem(str(0))
                 item.setTextAlignment(132)
                 table_widget.setItem(row, col, item)
-                
+
 
     def set_zero_input_push_button_clicked():
         set_zero_table_widget(ui.inputTableWidget)
@@ -266,6 +265,47 @@ if __name__ == '__main__':
     ui.pauliMatricesSigmaZPushButton.clicked.connect(pauli_matrices_sigma_z_push_button_clicked)
 
 
+    def t_gate_push_button_clicked():
+        input_array = input_array_from_table(ui.inputTableWidget)
+        input_array = normalize_input_if_needed(input_array)
+        output_array_to_table(input_array, ui.inputTableWidget)
+
+        qubit_ind = qubit_number_from_spin_box(ui.TgateTargetSpinBox)
+
+        if qubit_ind == -1:
+            return
+        try:
+            conjugation = ui.TgateCheckBox.isChecked()
+            output_array_to_table(
+                apply_t_gate(input_array, qubit_ind, conjugation), ui.outputTableWidget)
+            ui.lineEdit.setText(add_apply_t_gate(ui.lineEdit.text(), qubit_ind, conjugation))
+        except sp.SympifyError as error:
+            main_message_error(str(error))
+
+
+    ui.TgatePushButton.clicked.connect(t_gate_push_button_clicked)
+
+    def s_gate_push_button_clicked():
+        input_array = input_array_from_table(ui.inputTableWidget)
+        input_array = normalize_input_if_needed(input_array)
+        output_array_to_table(input_array, ui.inputTableWidget)
+
+        qubit_ind = qubit_number_from_spin_box(ui.SgateTargetSpinBox)
+
+        if qubit_ind == -1:
+            return
+        try:
+            conjugation = ui.SgateCheckBox.isChecked()
+            output_array_to_table(
+                apply_s_gate(input_array, qubit_ind, conjugation), ui.outputTableWidget)
+            ui.lineEdit.setText(add_apply_s_gate(ui.lineEdit.text(), qubit_ind, conjugation))
+        except sp.SympifyError as error:
+            main_message_error(str(error))
+
+
+    ui.SgatePushButton.clicked.connect(s_gate_push_button_clicked)
+
+
     def hadamard_push_button_clicked():
         input_array = input_array_from_table(ui.inputTableWidget)
         input_array = normalize_input_if_needed(input_array)
@@ -391,14 +431,14 @@ if __name__ == '__main__':
        этого базисного состояния )
        Образующийся регистр выводится в окно Input, если Second  line = 1
        При любом другом значении Second Line рагистр выводится в окно Output
-   ''' 
+   '''
     def swap_push_button_2_clicked():
         #print(777)
         input_array = input_array_from_table(ui.inputTableWidget)
         input_array = normalize_input_if_needed(input_array)
         #output_array_to_table(input_array, ui.inputTableWidget)
 
-      
+
         first_line_ind = line_number_from_spin_box(ui.swapFirstLineSpinBox_2)
         second_line_ind = line_number_from_spin_box(ui.swapSecondLineSpinBox_2)
         #print('first = ',first_line_ind, ' second= ',second_line_ind)
@@ -410,7 +450,7 @@ if __name__ == '__main__':
         i1=int(first_line_ind)
         #print(' i1 = ', i1)
         i2=int(second_line_ind)
-        #print(' i2 = ', i2) 
+        #print(' i2 = ', i2)
         real=AllBazisStates(nq)
         #print('вход',real)
         time=AllBazisStates(nq)
@@ -429,10 +469,10 @@ if __name__ == '__main__':
            output_array_to_table(result, ui.inputTableWidget)
         else:
            output_array_to_table(result, ui.outputTableWidget)
-        
+
         #print('имя кнопки')
     ui.swapPushButton_2.clicked.connect(swap_push_button_2_clicked)
-  
+
 
     def swap_push_button_clicked():
         input_array = input_array_from_table(ui.inputTableWidget)
