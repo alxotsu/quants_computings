@@ -7,8 +7,10 @@ sigma_x_matrix = np.array([[0, 1], [1, 0]])
 sigma_y_matrix = np.array([[0, 0 - 1j], [0 + 1j, 0]])
 sigma_z_matrix = np.array([[1, 0], [0, -1]])
 hadamard_matrix = np.array([[1, 1], [1, -1]])
+
 t_gate_matrix = np.array([[1, 0], [0, np.exp(1j * np.pi / 4)]])
 s_gate_matrix = np.array([[1, 0], [0, np.exp(1j * np.pi / 2)]])
+root_matrix = np.array([[1 + 1j, 1 - 1j], [1 - 1j, 1 + 1j]])
 
 
 def apply_matrix(input_array, matrix, qubit_ind):
@@ -71,6 +73,13 @@ def apply_s_gate(input_array, qubit_ind, conjugation):
         s_matrix[1][1] *= -1j
 
     return apply_matrix(input_array, s_matrix, qubit_ind)
+
+
+def apply_root(input_array, qubit_ind):
+    result = apply_matrix(input_array, root_matrix, qubit_ind)
+    for row in range(0, len(result)):
+        result[row] = "1/sqrt(2)*(" + str(result[row]).replace('I', 'j') + ")"
+    return result
 
 
 def apply_hadamard(input_array, qubit_ind):

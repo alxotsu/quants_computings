@@ -306,6 +306,22 @@ if __name__ == '__main__':
     ui.SgatePushButton.clicked.connect(s_gate_push_button_clicked)
 
 
+    def root_push_button_clicked():
+        input_array = input_array_from_table(ui.inputTableWidget)
+        input_array = normalize_input_if_needed(input_array)
+        output_array_to_table(input_array, ui.inputTableWidget)
+
+        qubit_ind = qubit_number_from_spin_box(ui.RootSpinBox)
+        if qubit_ind == -1:
+            return
+        try:
+            output_array_to_table(
+                apply_root(input_array, qubit_ind), ui.outputTableWidget)
+            ui.lineEdit.setText(add_apply_root(ui.lineEdit.text(), qubit_ind))
+        except sp.SympifyError as error:
+            main_message_error(str(error))
+    ui.RootPushButton.clicked.connect(root_push_button_clicked)
+
     def hadamard_push_button_clicked():
         input_array = input_array_from_table(ui.inputTableWidget)
         input_array = normalize_input_if_needed(input_array)

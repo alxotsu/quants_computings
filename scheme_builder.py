@@ -15,6 +15,7 @@ SWAP1_NAME = 'ER'
 TRANSITION_NAME = '_'
 T_GATE_NAME = 'T'
 S_GATE_NAME = 'S'
+ROOT_NAME = '√'
 
 
 def add_apply_sigma_x(scheme_string, qubit_ind):
@@ -41,6 +42,10 @@ def add_apply_s_gate(scheme_string, qubit_ind, conjugation):
         return scheme_string + TRANSITION_NAME + S_GATE_NAME + '(' + \
                str(qubit_ind + 1) + ',' + '†' + ')'
     return scheme_string + TRANSITION_NAME + S_GATE_NAME + '(' + str(qubit_ind + 1) + ')'
+
+
+def add_apply_root(scheme_string, qubit_ind):
+    return scheme_string + TRANSITION_NAME + ROOT_NAME + '(' + str(qubit_ind + 1) + ')'
 
 
 def add_apply_hadamard(scheme_string, qubit_ind):
@@ -137,6 +142,12 @@ def apply_scheme(scheme_string, input_array):
             if len(args_list) != 1 or len(args_list) != 2:
                 return result_array, 'Wrong number of args: ' + gate_string
             result_array = apply_s_gate(result_array, int(args_list[0]) - 1, args_list[1])
+
+        elif is_gate(ROOT_NAME):
+            args_list = gate_args(ROOT_NAME)
+            if len(args_list) != 1:
+                return result_array, 'Wrong number of args: ' + gate_string
+            result_array = apply_root(result_array, int(args_list[0]) - 1)
 
         elif is_gate(HADAMARD_NAME):
             args_list = gate_args(HADAMARD_NAME)
